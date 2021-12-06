@@ -9,7 +9,10 @@ import (
 
 func TestRecordingWinsAndRetrievingThemInMemory(t *testing.T) {
 	// SETUP
-	store := NewInMemoryPlayerStore()
+	db, rmDb := createTempFileStore(t, `[]`)
+	defer rmDb()
+	store, err := NewFileSystemPlayerStore(db)
+	assertNoError(t, err)
 	server := NewPlayerServer(store)
 	name := "Pepper"
 	numWins := 3

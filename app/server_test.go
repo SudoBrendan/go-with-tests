@@ -15,7 +15,7 @@ import (
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league   []Player
+	league   League
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -27,7 +27,7 @@ func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
 }
 
-func (s *StubPlayerStore) GetLeague() []Player {
+func (s *StubPlayerStore) GetLeague() League {
 	return s.league
 }
 
@@ -175,9 +175,7 @@ func assertPlayerStoreWinCalls(t testing.TB, store StubPlayerStore, want []strin
 func assertResponseLeague(t testing.TB, response *httptest.ResponseRecorder, want []Player) {
 	t.Helper()
 	got := getLeagueFromResponse(t, response.Body)
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got %+v want %+v", got, want)
-	}
+	assertLeague(t, got, want)
 }
 
 func getLeagueFromResponse(t testing.TB, body io.Reader) (league []Player) {
@@ -187,6 +185,12 @@ func getLeagueFromResponse(t testing.TB, body io.Reader) (league []Player) {
 		t.Fatalf("Unable to parse league response from server %q into []Player: %v", body, err)
 	}
 	return
+}
+
+func assertLeague(t testing.TB, got, want []Player) {
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v want %+v", got, want)
+	}
 }
 
 func assertResponseContentType(t testing.TB, response *httptest.ResponseRecorder, want string) {
