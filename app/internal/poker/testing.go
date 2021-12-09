@@ -10,6 +10,7 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"time"
 )
 
 // STUBS
@@ -40,6 +41,34 @@ func (s *StubPlayerStore) RecordWin(name string) {
 func (s *StubPlayerStore) GetLeague() League {
 	return s.league
 }
+
+type StubBlindAlert struct {
+	scheduledAt time.Duration
+	amount      int
+}
+
+func NewStubBlindAlert(duration time.Duration, amount int) StubBlindAlert {
+	return StubBlindAlert{
+		scheduledAt: duration,
+		amount:      amount,
+	}
+}
+
+func (s *StubBlindAlert) GetScheduledAt() time.Duration { return s.scheduledAt }
+func (s *StubBlindAlert) GetAmount() int                { return s.amount }
+
+type SpyBlindAlerter struct {
+	alerts []StubBlindAlert
+}
+
+func (s *SpyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
+	s.alerts = append(s.alerts, StubBlindAlert{
+		scheduledAt: duration,
+		amount:      amount,
+	})
+}
+
+func (s *SpyBlindAlerter) GetAlerts() []StubBlindAlert { return s.alerts }
 
 // HELPERS
 
@@ -129,7 +158,7 @@ func CreateTempFileStore(t testing.TB, initialData string) (*os.File, func()) {
 	return tmpfile, removeFile
 }
 
-func AssertScoreEquals(t testing.TB, got, want int) {
+func AssertScoresEqual(t testing.TB, got, want int) {
 	t.Helper()
 	if got != want {
 		t.Errorf("got %d want %d", got, want)
@@ -140,5 +169,11 @@ func AssertNoError(t testing.TB, err error) {
 	t.Helper()
 	if err != nil {
 		t.Fatalf("didn't expect an error but got one, %v", err)
+	}
+}
+
+func AssertBlindsEqual(t testing.TB, got, want StubBlindAlert) {
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v want %+v", got, want)
 	}
 }

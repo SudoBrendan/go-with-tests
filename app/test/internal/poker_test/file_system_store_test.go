@@ -62,7 +62,7 @@ func TestFilesystemStore(t *testing.T) {
 
 		// Then
 		poker.AssertNoError(t, err)
-		poker.AssertScoreEquals(t, got, want)
+		poker.AssertScoresEqual(t, got, want)
 	})
 
 	t.Run("store wins for existing players", func(t *testing.T) {
@@ -80,7 +80,7 @@ func TestFilesystemStore(t *testing.T) {
 
 		// Then
 		poker.AssertNoError(t, err)
-		poker.AssertScoreEquals(t, got, want)
+		poker.AssertScoresEqual(t, got, want)
 	})
 
 	t.Run("store wins for new players", func(t *testing.T) {
@@ -98,7 +98,7 @@ func TestFilesystemStore(t *testing.T) {
 
 		// Then
 		poker.AssertNoError(t, err)
-		poker.AssertScoreEquals(t, got, want)
+		poker.AssertScoresEqual(t, got, want)
 	})
 
 	t.Run("works with an empty file", func(t *testing.T) {
